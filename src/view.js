@@ -6,12 +6,9 @@ import { store, getContext } from '@wordpress/interactivity';
 /**
  * Non-module dependencies
  */
-const {
-	apiFetch,
-	i18n: { __ },
-} = wp;
+const { apiFetch } = wp;
 
-const { actions } = store( 'booking-form', {
+const { state, actions } = store( 'booking-form', {
 	actions: {
 		next( e ) {
 			e.preventDefault();
@@ -52,7 +49,6 @@ const { actions } = store( 'booking-form', {
 			const context = getContext();
 			context.submitting = true;
 
-			const title = __( 'Booking Form Submission', 'booking-form' );
 			const content = actions.reviewFields().reduce( ( acc, field ) => {
 				return `${ acc }<p><strong>${ field.label }</strong>: ${ field.value }</p>`;
 			}, '' );
@@ -62,7 +58,7 @@ const { actions } = store( 'booking-form', {
 					path: '/booking-form/v1/booking',
 					method: 'POST',
 					data: {
-						title,
+						title: state.title,
 						content,
 					},
 				} );
