@@ -11,7 +11,23 @@ const {
 	i18n: { __ },
 } = wp;
 
-const { actions } = store( 'booking-form', {
+const { state } = store( 'booking-form', {
+  state: {
+    get reviewFields() {
+      const { steps } = getContext();
+      return steps.reduce((acc, step) => {
+        return [...acc, ...step.fields];
+      }, []);
+    },
+    get isFirstStep() {
+      const { steps } = getContext();
+      return steps[0].isActive;
+    },
+    get isLastStep() {
+      const { steps } = getContext();
+      return steps[steps.length - 1].isActive;
+    },
+  },
 	actions: {
 		next( e ) {
 			e.preventDefault();
@@ -53,7 +69,7 @@ const { actions } = store( 'booking-form', {
 			context.submitting = true;
 
 			const title = __( 'Booking Form Submission', 'booking-form' );
-			const content = actions.reviewFields().reduce( ( acc, field ) => {
+			const content = state.reviewFields.reduce( ( acc, field ) => {
 				return `${ acc }<p><strong>${ field.label }</strong>: ${ field.value }</p>`;
 			}, '' );
 
@@ -94,20 +110,6 @@ const { actions } = store( 'booking-form', {
 		updateField( e ) {
 			const { field } = getContext();
 			field.value = e.target.value;
-		},
-		reviewFields() {
-			const { steps } = getContext();
-			return steps.reduce( ( acc, step ) => {
-				return [ ...acc, ...step.fields ];
-			}, [] );
-		},
-		isFirstStep() {
-			const { steps } = getContext();
-			return steps[ 0 ].isActive;
-		},
-		isLastStep() {
-			const { steps } = getContext();
-			return steps[ steps.length - 1 ].isActive;
 		},
 	},
 } );
